@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract EnhancedStorage {
+    address public owner;
+    mapping(address => string) private userData;
+    address[] private users;
+
+    event DataStored(address indexed user, string data);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can call this function");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function setUserdata(string memory newData) external {
+        userData[msg.sender] = newData;
+
+        if (!userExists(msg.sender)) {
+            users.push(msg.sender);
+        }
+
+        emit DataStored(msg.sender, newData);
+    }
+
+    function getUserdata(address user) external view returns (string memory) {
+        require(msg.sender == user || msg.sender == owner, "Unauthorized access");
+        return userData[user];
+    }
+
+    function getAllUsers() external view onlyOwner returns (address[] memory) {
+        return users;
+    }
+
+    function userExists(address user) internal view returns (bool) {
+        for (uint256 i = 0; i < users.length; i++) {
+            if (users[i] == user) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
