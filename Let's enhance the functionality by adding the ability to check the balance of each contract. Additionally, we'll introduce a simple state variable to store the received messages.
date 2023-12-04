@@ -1,0 +1,52 @@
+# ContractA.starknet
+
+# State variable to store messages received from ContractB
+messages_from_b : public(map(int, int))
+
+@public
+@payable
+def deposit():
+    # Handle deposit logic
+    pass
+
+@public
+def sendToB(message: int):
+    # Call ContractB's receiveMessage method to send a message
+    invoke_contract("0xContractBAddress", "receiveMessage(uint256)", message)
+    # Store the sent message in the state variable
+    self.messages_from_b[timestamp] = message
+
+@public
+@view
+def getBalance():
+    # Return the balance of the contract
+    return starknet.balance
+
+# ContractB.starknet
+
+# State variable to store messages received from ContractA
+messages_from_a : public(map(int, int))
+
+@public
+@payable
+def deposit():
+    # Handle deposit logic
+    pass
+
+@public
+def receiveMessage(message: int):
+    # Handle receiving message logic
+    pass
+
+@public
+def sendToA(message: int):
+    # Call ContractA's receiveMessage method to send a message
+    invoke_contract("0xContractAAddress", "receiveMessage(uint256)", message)
+    # Store the sent message in the state variable
+    self.messages_from_a[timestamp] = message
+
+@public
+@view
+def getBalance():
+    # Return the balance of the contract
+    return starknet.balance
